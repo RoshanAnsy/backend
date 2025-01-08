@@ -1,5 +1,5 @@
 import {  PrismaClient } from '@prisma/client';
-import express, { Response } from 'express';
+import express, { Response,Request } from 'express';
 import dotenv from "dotenv";
 import AuthRoute from "./routes/auth.route";
 import userRoute from "./routes/user.route";
@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
 
-app.get('/',(res:Response)=>{
+app.get('/',(req:Request,res:Response)=>{
     res.send("server is running");
 })
 app.use('/',AuthRoute);

@@ -18,7 +18,7 @@ app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use(body_parser_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
-app.get('/', (res) => {
+app.get('/', (req, res) => {
     res.send("server is running");
 });
 app.use('/', auth_route_1.default);
