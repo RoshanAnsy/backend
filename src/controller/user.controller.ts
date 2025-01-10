@@ -25,26 +25,37 @@ const logUserActivity=async (userId:number, action:'LOGIN' | 'LOGOUT')=>{
 
 
 
-const getUserLog=async (req:CustomRequest, res: Response):Promise<void> => {
+const getUserLogs=async (req:CustomRequest, res: Response):Promise<void> => {
         
     try{
-        const userId=req.userId;
-        console.log("userId: " +userId)
-        if(!userId){
+        const Id=req.userId;
+        if(!Id){
             res.status(400).json({
                 success: false,
                 error: "User ID is required"
             });
             return;
         }
-
-        const logsResponse=prisma.log.findFirst({
-            
-            
-            // orderBy:{timestamp:"desc"}
+        const logs = await prisma.user.findUnique({
+            where: {
+                id: Id,
+            },
+            select: {
+                name: true,
+                email: true,
+                logs: {
+                    select: {
+                        action: true,
+                        timestamp: true,
+                    },
+                    orderBy: {
+                        timestamp: 'desc',
+                    },
+                },
+            },
         });
 
-        if(!logsResponse){
+        if(!logs){
             res.status(404).json({
                 success: false,
                 error: "No logs found"
@@ -55,7 +66,7 @@ const getUserLog=async (req:CustomRequest, res: Response):Promise<void> => {
         res.status(200).json({
             message:"User logs get successfully",
             success:true,
-            logsResponse
+            logs,
         })
     }
     catch(error){
@@ -109,4 +120,5 @@ const getAllUsers = async (req: Request, res: Response): Promise<void> => {
     
 
 }
-export {getUserLog,getAllUsers,logUserActivity}
+
+export {getUserLogs,getAllUsers,logUserActivity}

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logUserActivity = exports.getAllUsers = exports.getUserLog = void 0;
+exports.logUserActivity = exports.getAllUsers = exports.getUserLogs = void 0;
 const __1 = require("..");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -30,21 +30,35 @@ const logUserActivity = (userId, action) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.logUserActivity = logUserActivity;
-const getUserLog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserLogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = req.userId;
-        console.log("userId: " + userId);
-        if (!userId) {
+        const Id = req.userId;
+        if (!Id) {
             res.status(400).json({
                 success: false,
                 error: "User ID is required"
             });
             return;
         }
-        const logsResponse = __1.prisma.log.findFirst({
-        // orderBy:{timestamp:"desc"}
+        const logs = yield __1.prisma.user.findUnique({
+            where: {
+                id: Id,
+            },
+            select: {
+                name: true,
+                email: true,
+                logs: {
+                    select: {
+                        action: true,
+                        timestamp: true,
+                    },
+                    orderBy: {
+                        timestamp: 'desc',
+                    },
+                },
+            },
         });
-        if (!logsResponse) {
+        if (!logs) {
             res.status(404).json({
                 success: false,
                 error: "No logs found"
@@ -54,7 +68,7 @@ const getUserLog = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json({
             message: "User logs get successfully",
             success: true,
-            logsResponse
+            logs,
         });
     }
     catch (error) {
@@ -65,7 +79,7 @@ const getUserLog = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
 });
-exports.getUserLog = getUserLog;
+exports.getUserLogs = getUserLogs;
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { limit, skip } = req.query;
