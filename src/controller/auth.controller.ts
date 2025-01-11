@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import * as jwt from 'jsonwebtoken';
 import {logUserActivity} from "./user.controller"
+import { CustomRequest } from "../middleware/auth.middleware";
 dotenv.config();
 
 
@@ -172,9 +173,9 @@ const login=async (req:Request,res:Response): Promise<void>=>{
 
 //logout
 
-const logout=async (req:Request,res:Response): Promise<void>=>{
+const logout=async (req:CustomRequest,res:Response): Promise<void>=>{
     try{
-        const userId=Number(req.params.userId);
+        const userId=req.userId;
         if(!userId){
             res.status(400).json({
                 success: false,

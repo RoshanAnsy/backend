@@ -195,7 +195,7 @@ exports.login = login;
 //logout
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userId = Number(req.params.userId);
+        const userId = req.userId;
         if (!userId) {
             res.status(400).json({
                 success: false,
